@@ -13,13 +13,18 @@ try {
 const server = Bun.serve({
   async fetch(req) {
     const url = new URL(req.url);
-    if (url.pathname === "/") {
-      const rst = await sequelize.query("SELECT NOW();", { type: QueryTypes.SELECT });
-      const now = rst[0];
-      const body = figlet.textSync("bun!");
-      return new Response(body + "\n" + JSON.stringify(now, null, 2));
+    switch (url.pathname) {
+      case "/":
+        const rst = await sequelize.query("SELECT NOW();", { type: QueryTypes.SELECT });
+        if (rst.length === 0) {
+          return new Response();
+        }
+        const now = rst[0];
+        const body = figlet.textSync("bun!");
+        return new Response(body + "\n" + JSON.stringify(now, null, 2));
+      default:
+        return new Response();
     }
-    return new Response();
   },
   port: 3000,
 });

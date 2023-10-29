@@ -19,18 +19,21 @@ func main() {
 	err := db.NewSelect().NewRaw("SELECT NOW()").Scan(ctx, &now)
 	log.Println("select now:", now)
 	log.Println("error:", err)
+	if err != nil {
+		panic("database is not ready, please check your DSN")
+	}
 
 	linesCh := readByBatch(csv, 1000)
 	for lines := range linesCh {
-		if len(lines) == 0 {
-			break
+		records := make([]*dbench.Record, 0, len(lines))
+		for _, line := range lines {
+			records = append(records, dbench.ParseRecord(line))
 		}
-
-		records := parseByBatch(lines)
 		if err := db.Insert(ctx, records); err != nil {
 			log.Println("error:", err)
-			break
+			panic("failed to insert records")
 		}
+		log.Println("one batch finished, len=", len(records))
 	}
 }
 
@@ -73,12 +76,4 @@ func readByBatch(filename string, batchSize int) <-chan [][]string {
 	}()
 
 	return rst
-}
-
-func parseByBatch(batch [][]string) []*dbench.Record {
-	records := make([]*dbench.Record, 0, len(batch))
-	for _, line := range batch {
-		records = append(records, dbench.ParseRecord(line))
-	}
-	return records
 }
