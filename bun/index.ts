@@ -1,15 +1,19 @@
 import figlet from "figlet";
+import { exit } from "process";
 import { Sequelize, QueryTypes } from "sequelize";
+import { now, randomByPrice } from "./handler";
+
+const hi = figlet.textSync("hi, this is bun!");
+console.log(hi);
 
 const dsn = Bun.env.DSN ?? "mysql://root:password@127.0.0.1:3306/dbench";
 const sequelize = new Sequelize(dsn);
-
 try {
-    console.log("connecting to the database...");
     await sequelize.authenticate();
     console.log("connection has been established successfully");
 } catch (error) {
     console.error("unable to connect to the database:", error);
+    exit(1);
 }
 
 const server = Bun.serve({
@@ -17,13 +21,9 @@ const server = Bun.serve({
         const url = new URL(req.url);
         switch (url.pathname) {
             case "/":
-                const rst = await sequelize.query("SELECT NOW()", { type: QueryTypes.SELECT });
-                if (rst.length === 0) {
-                    return new Response();
-                }
-                const now = rst[0];
-                const body = figlet.textSync("bun!");
-                return new Response(body + "\n" + JSON.stringify(now, null, 2));
+                return await now(sequelize);
+            case "/random-by-price":
+                return await randomByPrice(sequelize);
             default:
                 return new Response();
         }
