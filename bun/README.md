@@ -1,4 +1,4 @@
-# bbench
+# dbench
 
 To install dependencies:
 
