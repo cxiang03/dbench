@@ -1,7 +1,7 @@
 import figlet from "figlet";
 import { exit } from "process";
-import { Sequelize, QueryTypes } from "sequelize";
-import { now, randomByPrice } from "./handler";
+import { Sequelize } from "sequelize";
+import { now, randomByPrice, randomInTimeRange } from "./handler";
 
 const hi = figlet.textSync("hi, this is bun!");
 console.log(hi);
@@ -24,6 +24,8 @@ const server = Bun.serve({
                 return await now(sequelize);
             case "/random-by-price":
                 return await randomByPrice(sequelize);
+            case "/random-in-time-range":
+                return await randomInTimeRange(sequelize);
             default:
                 return new Response();
         }
