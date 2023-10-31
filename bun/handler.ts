@@ -1,9 +1,15 @@
 import { Sequelize, QueryTypes } from "sequelize";
+import { Client } from "es7";
 
 async function now(sequelize: Sequelize): Promise<Response> {
     const query = "SELECT NOW()";
     const results = await sequelize.query(query, { type: QueryTypes.SELECT });
     const body = results.shift();
+    return new Response(JSON.stringify(body, null, 2));
+}
+
+async function es(esClient: Client): Promise<Response> {
+    const { body } = await esClient.info();
     return new Response(JSON.stringify(body, null, 2));
 }
 
@@ -27,4 +33,4 @@ async function randomInTimeRange(sequelize: Sequelize): Promise<Response> {
     return new Response(JSON.stringify(body, null, 2));
 }
 
-export { now, randomByPrice, randomInTimeRange };
+export { now, es, randomByPrice, randomInTimeRange };
