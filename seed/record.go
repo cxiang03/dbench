@@ -29,21 +29,21 @@ type RawRecord struct {
 
 type Record struct {
 	bun.BaseModel `bun:"table:prices"`
-	ID            int64 `bun:",pk,autoincrement"`
-	UUID          string
-	Price         int64
-	TimeStamp     int64
-	PostCode      string
-	PType         string
-	IsNew         bool
-	Duration      string
-	Addr1         string
-	Addr2         string
-	Street        string
-	Locality      string
-	Town          string
-	District      string
-	County        string
+	ID            int64  `bun:",pk,autoincrement"`
+	UUID          string `json:"uuid"`
+	Price         int64  `json:"price"`
+	TimeStamp     int64  `json:"time_stamp"`
+	PostCode      string `json:"postcode"`
+	PType         string `json:"p_type"`
+	IsNew         bool   `json:"is_new"`
+	Duration      string `json:"duration"`
+	Addr1         string `json:"addr1"`
+	Addr2         string `json:"addr2"`
+	Street        string `json:"street"`
+	Locality      string `json:"locality"`
+	Town          string `json:"town"`
+	District      string `json:"district"`
+	County        string `json:"county"`
 }
 
 func ParseRecord(line []string) *Record {

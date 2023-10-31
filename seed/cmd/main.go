@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	csv, dsn := parseArgs()
+	csv, dsn, esa := parseArgs()
 
 	db := dbench.NewDB(dsn)
 	ctx := context.Background()
@@ -21,6 +21,13 @@ func main() {
 	log.Println("error:", err)
 	if err != nil {
 		panic("database is not ready, please check your DSN")
+	}
+
+	es := dbench.NewEsClient(esa)
+	err = es.Ping()
+	log.Println("error:", err)
+	if err != nil {
+		panic("elasticsearch is not ready, please check your elastic search address")
 	}
 
 	linesCh := readByBatch(csv, 1000)
@@ -33,15 +40,20 @@ func main() {
 			log.Println("error:", err)
 			panic("failed to insert records")
 		}
+		if err := es.Insert(ctx, records); err != nil {
+			log.Println("error:", err)
+			panic("failed to insert records")
+		}
 		log.Println("one batch finished, len=", len(records))
 	}
 }
 
-func parseArgs() (string, string) {
+func parseArgs() (string, string, string) {
 	filePath := flag.String("f", "./pp-monthly-update-new-version.csv", "CSV data to load")
 	databaseDSN := flag.String("d", "root:password@tcp(127.0.0.1:3306)/dbench", "Database DSN")
+	elasticsearchDSN := flag.String("e", "http://103.3.60.74:9200", "Elasticsearch DSN")
 	flag.Parse()
-	return *filePath, *databaseDSN
+	return *filePath, *databaseDSN, *elasticsearchDSN
 }
 
 func readByBatch(filename string, batchSize int) <-chan [][]string {
