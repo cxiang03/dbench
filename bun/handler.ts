@@ -33,4 +33,31 @@ async function randomInTimeRange(sequelize: Sequelize): Promise<Response> {
     return new Response(JSON.stringify(body, null, 2));
 }
 
-export { now, es, randomByPrice, randomInTimeRange };
+async function esInTimeRange(esClient: Client): Promise<Response> {
+    // magic random numbers
+    const from = 1630000000 + Math.floor(Math.random() * 10000000);
+    const to = from + Math.floor(Math.random() * 30000000);
+
+    const body = {
+        size: 5,
+        query: {
+            bool: {
+                filter: [
+                    { term: { p_type: "F" } },
+                    {
+                        range: {
+                            time_stamp: {
+                                gte: from,
+                                lte: to,
+                            },
+                        },
+                    },
+                ],
+            },
+        },
+    };
+    const { body: results } = await esClient.search({ index: "prices", body });
+    return new Response(JSON.stringify(results.hits.hits, null, 2));
+}
+
+export { now, es, randomByPrice, randomInTimeRange, esInTimeRange };
