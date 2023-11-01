@@ -48,7 +48,7 @@ const server = Bun.serve({
             case "/random-uuid":
                 return await randomUUID(redis);
             default:
-                return new Response();
+                return new Response(JSON.stringify({ status: "ok" }, null, 2));
         }
     },
     port: 3000,
