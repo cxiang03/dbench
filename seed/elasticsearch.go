@@ -22,6 +22,8 @@ type EsClient struct {
 func NewEsClient(dsn string) *EsClient {
 	retryBackoff := backoff.NewExponentialBackOff()
 	es, err := elasticsearch.NewClient(elasticsearch.Config{
+		Username:      "elastic",
+		Password:      "123qQ123",
 		Addresses:     []string{dsn},
 		RetryOnStatus: []int{502, 503, 504, 429},
 		RetryBackoff: func(i int) time.Duration {

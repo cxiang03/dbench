@@ -12,6 +12,7 @@ import (
 
 func main() {
 	csv, dsn, esa := parseArgs()
+	_ = esa
 
 	db := dbench.NewDB(dsn)
 	ctx := context.Background()
@@ -23,11 +24,18 @@ func main() {
 		panic("database is not ready, please check your DSN")
 	}
 
-	es := dbench.NewEsClient(esa)
-	err = es.Ping()
+	// es := dbench.NewEsClient(esa)
+	// err = es.Ping()
+	// log.Println("error:", err)
+	// if err != nil {
+	// 	panic("elasticsearch is not ready, please check your elastic search address")
+	// }
+
+	redis := dbench.NewRedis()
+	err = redis.Ping(ctx).Err()
 	log.Println("error:", err)
 	if err != nil {
-		panic("elasticsearch is not ready, please check your elastic search address")
+		panic("redis is not ready, please check your redis address")
 	}
 
 	linesCh := readByBatch(csv, 1000)
@@ -36,11 +44,15 @@ func main() {
 		for _, line := range lines {
 			records = append(records, dbench.ParseRecord(line))
 		}
-		if err := db.Insert(ctx, records); err != nil {
-			log.Println("error:", err)
-			panic("failed to insert records")
-		}
-		if err := es.Insert(ctx, records); err != nil {
+		// if err := db.Insert(ctx, records); err != nil {
+		// 	log.Println("error:", err)
+		// 	panic("failed to insert records")
+		// }
+		// if err := es.Insert(ctx, records); err != nil {
+		// 	log.Println("error:", err)
+		// 	panic("failed to insert records")
+		// }
+		if err := redis.Insert(ctx, records); err != nil {
 			log.Println("error:", err)
 			panic("failed to insert records")
 		}

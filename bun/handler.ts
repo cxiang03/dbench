@@ -1,5 +1,6 @@
 import { Sequelize, QueryTypes } from "sequelize";
 import { Client } from "es7";
+import { RedisClientType } from "redis";
 
 async function now(sequelize: Sequelize): Promise<Response> {
     const query = "SELECT NOW()";
@@ -60,4 +61,10 @@ async function esInTimeRange(esClient: Client): Promise<Response> {
     return new Response(JSON.stringify(results.hits.hits, null, 2));
 }
 
-export { now, es, randomByPrice, randomInTimeRange, esInTimeRange };
+async function randomUUID(redis: RedisClientType): Promise<Response> {
+    const key = await redis.RANDOMKEY();
+    const body = await redis.GET(key ?? "");
+    return new Response(body);
+}
+
+export { now, es, randomByPrice, randomInTimeRange, esInTimeRange, randomUUID };
