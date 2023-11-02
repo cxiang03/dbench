@@ -18,6 +18,12 @@ func NewMeili() *Meili {
 	return &Meili{Client: client}
 }
 
+func (m *Meili) UpdateSortableAttributes(_ context.Context) error {
+	attributes := []string{"price", "time_stamp"}
+	_, err := m.Index("prices").UpdateSortableAttributes(&attributes)
+	return err
+}
+
 func (m *Meili) UpdateFilterableAttributes(_ context.Context) error {
 	attributes := []string{"price", "time_stamp", "postcode", "p_type", "is_new", "duration"}
 	_, err := m.Index("prices").UpdateFilterableAttributes(&attributes)

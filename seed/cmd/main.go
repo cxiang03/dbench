@@ -44,9 +44,6 @@ func main() {
 	if err != nil {
 		panic("meili is not ready, please check your meili address")
 	}
-	if err = meili.UpdateFilterableAttributes(ctx); err != nil {
-		panic("failed to update filterable attributes")
-	}
 
 	linesCh := readByBatch(csv, 1000)
 	for lines := range linesCh {
