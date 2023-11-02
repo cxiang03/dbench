@@ -74,6 +74,7 @@ async function meiliInTimeRange(meili: MeiliSearch): Promise<Response> {
     const to = from + Math.floor(Math.random() * 30000000);
     const rst = await meili.index("prices").search("", {
         filter: [`p_type = F AND time_stamp > ${from} AND time_stamp < ${to}`],
+        sort: ["price:desc"],
         limit: 3,
     });
     return new Response(JSON.stringify(rst.hits.pop(), null, 2));
