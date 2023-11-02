@@ -1,6 +1,7 @@
 import { Sequelize, QueryTypes } from "sequelize";
 import { Client } from "es7";
 import { RedisClientType } from "redis";
+import { MeiliSearch } from "meilisearch";
 
 async function now(sequelize: Sequelize): Promise<Response> {
     const query = "SELECT NOW()";
@@ -67,4 +68,15 @@ async function randomUUID(redis: RedisClientType): Promise<Response> {
     return new Response(body);
 }
 
-export { now, es, randomByPrice, randomInTimeRange, esInTimeRange, randomUUID };
+async function meiliInTimeRange(meili: MeiliSearch): Promise<Response> {
+    // magic random numbers
+    const from = 1630000000 + Math.floor(Math.random() * 10000000);
+    const to = from + Math.floor(Math.random() * 30000000);
+    const rst = await meili.index("prices").search("", {
+        filter: [`p_type = F AND time_stamp > ${from} AND time_stamp < ${to}`],
+        limit: 3,
+    });
+    return new Response(JSON.stringify(rst.hits.pop(), null, 2));
+}
+
+export { now, es, randomByPrice, randomInTimeRange, esInTimeRange, randomUUID, meiliInTimeRange };

@@ -16,6 +16,7 @@
     "es7": "npm:@elastic/elasticsearch@7",
     "figlet": "^1.7.0",
     "k6": "^0.0.0",
+    "meilisearch": "^0.35.0",
     "mysql2": "^3.6.2",
     "redis": "^4.6.10",
     "sequelize": "^6.33.0"

@@ -38,6 +38,16 @@ func main() {
 		panic("redis is not ready, please check your redis address")
 	}
 
+	meili := dbench.NewMeili()
+	v, err := meili.Version()
+	log.Println("version", v, "error:", err)
+	if err != nil {
+		panic("meili is not ready, please check your meili address")
+	}
+	if err = meili.UpdateFilterableAttributes(ctx); err != nil {
+		panic("failed to update filterable attributes")
+	}
+
 	linesCh := readByBatch(csv, 1000)
 	for lines := range linesCh {
 		records := make([]*dbench.Record, 0, len(lines))
@@ -53,6 +63,10 @@ func main() {
 		// 	panic("failed to insert records")
 		// }
 		if err := redis.Insert(ctx, records); err != nil {
+			log.Println("error:", err)
+			panic("failed to insert records")
+		}
+		if err := meili.Insert(ctx, records); err != nil {
 			log.Println("error:", err)
 			panic("failed to insert records")
 		}
