@@ -6,5 +6,5 @@ export const options = {
 };
 
 export default function () {
-    http.get("http://127.0.0.1:3000/random-by-time-range");
+    http.get("http://127.0.0.1:3000/random-in-time-range");
 }

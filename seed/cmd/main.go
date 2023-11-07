@@ -38,12 +38,12 @@ func main() {
 		panic("redis is not ready, please check your redis address")
 	}
 
-	meili := dbench.NewMeili()
-	v, err := meili.Version()
-	log.Println("version", v, "error:", err)
-	if err != nil {
-		panic("meili is not ready, please check your meili address")
-	}
+	// meili := dbench.NewMeili()
+	// v, err := meili.Version()
+	// log.Println("version", v, "error:", err)
+	// if err != nil {
+	// 	panic("meili is not ready, please check your meili address")
+	// }
 
 	linesCh := readByBatch(csv, 1000)
 	for lines := range linesCh {
@@ -51,29 +51,29 @@ func main() {
 		for _, line := range lines {
 			records = append(records, dbench.ParseRecord(line))
 		}
-		// if err := db.Insert(ctx, records); err != nil {
-		// 	log.Println("error:", err)
-		// 	panic("failed to insert records")
-		// }
+		if err := db.Insert(ctx, records); err != nil {
+			log.Println("error:", err)
+			panic("failed to insert records")
+		}
 		// if err := es.Insert(ctx, records); err != nil {
 		// 	log.Println("error:", err)
 		// 	panic("failed to insert records")
 		// }
-		if err := redis.Insert(ctx, records); err != nil {
-			log.Println("error:", err)
-			panic("failed to insert records")
-		}
-		if err := meili.Insert(ctx, records); err != nil {
-			log.Println("error:", err)
-			panic("failed to insert records")
-		}
+		// if err := redis.Insert(ctx, records); err != nil {
+		// 	log.Println("error:", err)
+		// 	panic("failed to insert records")
+		// }
+		// if err := meili.Insert(ctx, records); err != nil {
+		// 	log.Println("error:", err)
+		// 	panic("failed to insert records")
+		// }
 		log.Println("one batch finished, len=", len(records))
 	}
 }
 
 func parseArgs() (string, string, string) {
 	filePath := flag.String("f", "./pp-monthly-update-new-version.csv", "CSV data to load")
-	databaseDSN := flag.String("d", "root:password@tcp(127.0.0.1:3306)/dbench", "Database DSN")
+	databaseDSN := flag.String("d", "root:password@tcp(127.0.0.1:3306)/playground", "Database DSN")
 	elasticsearchDSN := flag.String("e", "http://103.3.60.74:9200", "Elasticsearch DSN")
 	flag.Parse()
 	return *filePath, *databaseDSN, *elasticsearchDSN

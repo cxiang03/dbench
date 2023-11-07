@@ -9,7 +9,7 @@ import { MeiliSearch } from "meilisearch";
 const hi = figlet.textSync("hi, this is bun!");
 console.log(hi);
 
-const dsn = Bun.env.DSN ?? "mysql://root:password@127.0.0.1:3306/dbench";
+const dsn = Bun.env.DSN ?? "mysql://root:password@127.0.0.1:3306/playground";
 const sequelize = new Sequelize(dsn);
 try {
     await sequelize.authenticate();
@@ -22,10 +22,10 @@ try {
 const redis: RedisClientType = createClient();
 redis.on("error", (err) => console.log("redis client error", err)).connect();
 
-const meili = new MeiliSearch({
-    host: "http://103.3.60.74:7700",
-    apiKey: "123qQ123",
-});
+// const meili = new MeiliSearch({
+//     host: "http://103.3.60.74:7700",
+//     apiKey: "123qQ123",
+// });
 
 // const esa = Bun.env.ESA ?? "http://127.0.0.1:9200";
 // const esClient = new Client({ node: esa });
@@ -53,8 +53,8 @@ const server = Bun.serve({
                 return await randomInTimeRange(sequelize);
             case "/random-uuid":
                 return await randomUUID(redis);
-            case "/meili-in-time-range":
-                return await meiliInTimeRange(meili);
+            // case "/meili-in-time-range":
+            //     return await meiliInTimeRange(meili);
             default:
                 return new Response(JSON.stringify({ status: "ok" }, null, 2));
         }
